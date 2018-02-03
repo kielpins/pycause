@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>septests &mdash; pycause 0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="pycause 0.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pycause 0.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for septests</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions that return test sets for conditional independence tests.</span>
+<span class="sd">[1] D. Colombo&#39;s PhD thesis (ETH Zurich #21445, 2013), Colombo-causal-learning-high-dimension-THESIS.pdf,</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="get_adjs"><a class="viewcode-back" href="../septests.html#septests.get_adjs">[docs]</a><span class="k">def</span> <span class="nf">get_adjs</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find neighbors of a node in a graph, excluding a specified edge.</span>
+<span class="sd">    </span>
+<span class="sd">    TODO 2: rename this function more appropriately</span>
+<span class="sd">    </span>
+<span class="sd">    :param G: graph</span>
+<span class="sd">    :param edge: pair of nodes</span>
+<span class="sd">    :return: list of neighbors of first node, excluding second node</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">edge</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">z</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">z</span><span class="o">!=</span><span class="n">y</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="get_fci_sep"><a class="viewcode-back" href="../septests.html#septests.get_fci_sep">[docs]</a><span class="k">def</span> <span class="nf">get_fci_sep</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find possible d-separation sets for final skeleton of FCI algorithm using procedure defined in [1], p. 30.</span>
+<span class="sd">    </span>
+<span class="sd">    :param G: graph</span>
+<span class="sd">    :param edge: pair of nodes to test for d-separation</span>
+<span class="sd">    :return: cand_dict = dictionary of candidate d-separation sets</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">edge</span>
+    <span class="n">cand_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">z</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">G</span> <span class="k">if</span> <span class="n">z</span> <span class="o">!=</span> <span class="n">x</span><span class="p">]</span>
+    <span class="n">cand_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">cand_nodes</span><span class="p">:</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">all_simple_paths</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">z</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+            <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span>
+                <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="nb">iter</span><span class="p">:</span><span class="nb">iter</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">check_types</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s">&#39;*-&gt;&#39;</span> <span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="s">&#39;&lt;-*&#39;</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cand_dict</span><span class="p">[</span><span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>
+                <span class="k">break</span>
+    <span class="k">return</span> <span class="n">cand_dict</span>
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pycause 0.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Dave Kielpinski.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

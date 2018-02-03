@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>graphstat module &mdash; pycause 0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pycause 0.0 documentation" href="index.html" />
+    <link rel="next" title="graphstat_pymc module" href="graphstat_pymc.html" />
+    <link rel="prev" title="dirgraph module" href="dirgraph.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="graphstat_pymc.html" title="graphstat_pymc module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dirgraph.html" title="dirgraph module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pycause 0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-graphstat">
+<span id="graphstat-module"></span><h1>graphstat module<a class="headerlink" href="#module-graphstat" title="Permalink to this headline">¶</a></h1>
+<p>Generate statistical data for a graph using a linear Gaussian model.</p>
+<dl class="function">
+<dt id="graphstat.get_lg_vals">
+<tt class="descclassname">graphstat.</tt><tt class="descname">get_lg_vals</tt><big>(</big><em>graph</em>, <em>calc_names</em>, <em>trial</em>, <em>vals</em>, <em>beta_range</em>, <em>stdev</em><big>)</big><a class="reference internal" href="_modules/graphstat.html#get_lg_vals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#graphstat.get_lg_vals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate values of nodes for next layer of graph, given values of previous layers.
+:param graph: graph to be modeled
+:param calc_names: names of all nodes that have already been assigned values
+:param trial: number of current trial
+:param vals: values of all data in all trials
+:param beta_range: range [beta_min, beta_max] for linear coefficients
+:param stdev: standard deviation of Gaussian noise added at each node
+:return: vals = values of nodes at next layer</p>
+<blockquote>
+<div>new_names = names of nodes at next layer</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="graphstat.lingauss">
+<tt class="descclassname">graphstat.</tt><tt class="descname">lingauss</tt><big>(</big><em>graph_in</em>, <em>beta_range</em>, <em>stdev</em>, <em>fname</em>, <em>nsamp=1000</em><big>)</big><a class="reference internal" href="_modules/graphstat.html#lingauss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#graphstat.lingauss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate statistical data for a graph using a linear Gaussian model.
+Linear coefficients are randomly chosen in a range specified by beta_range.
+TODO 2: replace vals with generator?
+:param graph_in: graph to be modeled
+:param beta_range: range [beta_min, beta_max] for linear coefficients
+:param stdev: standard deviation of Gaussian noise added at each node
+:param fname: filename for saving data
+:param nsamp: number of data samples to generate
+:return: output = numpy array of data samples</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dirgraph.html"
+                        title="previous chapter">dirgraph module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="graphstat_pymc.html"
+                        title="next chapter">graphstat_pymc module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/graphstat.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="graphstat_pymc.html" title="graphstat_pymc module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dirgraph.html" title="dirgraph module"
+             >previous</a> |</li>
+        <li><a href="index.html">pycause 0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Dave Kielpinski.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

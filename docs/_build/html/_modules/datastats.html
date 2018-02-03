@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>datastats &mdash; pycause 0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="pycause 0.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pycause 0.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for datastats</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Define DataStats class for managing statistical data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="CachedAttribute"><a class="viewcode-back" href="../datastats.html#datastats.CachedAttribute">[docs]</a><span class="k">class</span> <span class="nc">CachedAttribute</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Computes attribute value and caches it in instance.</span>
+<span class="sd">    Not actually used in code at present, but could be useful for later refactoring.</span>
+<span class="sd">    Author: Denis Otkidach</span>
+
+<span class="sd">    Example of use:</span>
+<span class="sd">        class MyClass(object):</span>
+<span class="sd">            def myMethod(self):</span>
+<span class="sd">                # ...</span>
+<span class="sd">            myMethod = CachedAttribute(myMethod)</span>
+<span class="sd">    Use &quot;del inst.myMethod&quot; to clear cache.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">method</span><span class="o">.</span><span class="n">__name__</span>
+
+    <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inst</span><span class="p">,</span> <span class="n">cls</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">inst</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">(</span><span class="n">inst</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+</div>
+<div class="viewcode-block" id="DataStats"><a class="viewcode-back" href="../datastats.html#datastats.DataStats">[docs]</a><span class="k">class</span> <span class="nc">DataStats</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Manages statistical information on causal model.</span>
+<span class="sd">    </span>
+<span class="sd">    Allows for specification of statistics &quot;by hand&quot; when sample data is not available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_PREC</span> <span class="o">=</span> <span class="mf">1e-9</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">raw_data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create DataStats object. Each column of raw_data corresponds to a variable named in var_names.</span>
+<span class="sd">        </span>
+<span class="sd">        TODO 3: replace this with a more standard data structure (named numpy array? pandas?)</span>
+<span class="sd">        :param var_names: names of data variables</span>
+<span class="sd">        :param raw_data: sample data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">var_names</span> <span class="o">=</span> <span class="n">var_names</span>
+        <span class="k">if</span> <span class="n">raw_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span> <span class="o">=</span> <span class="n">raw_data</span>
+        
+<div class="viewcode-block" id="DataStats.get_corr_mat"><a class="viewcode-back" href="../datastats.html#datastats.DataStats.get_corr_mat">[docs]</a>    <span class="k">def</span> <span class="nf">get_corr_mat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get correlation matrix, either by returning cached value or calculating from raw data.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: correlation matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s">&#39;corr_mat&#39;</span><span class="p">):</span> <span class="c"># if corr_mat doesn&#39;t exist, calculate it</span>
+            <span class="c"># by default, numpy.corrcoef assumes each *row* corresponds to a variable</span>
+            <span class="c"># for our *column* variables, need to set rowvar = False</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s">&#39;raw_data&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">corr_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="p">,</span><span class="n">rowvar</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Raw data not present, cannot compute correlation matrix.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_mat</span>
+    </div>
+<div class="viewcode-block" id="DataStats.set_corr_mat"><a class="viewcode-back" href="../datastats.html#datastats.DataStats.set_corr_mat">[docs]</a>    <span class="k">def</span> <span class="nf">set_corr_mat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corr_mat</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set correlation matrix by hand. Use when raw data is not present.</span>
+<span class="sd">        </span>
+<span class="sd">        :param corr_mat: correlation matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s">&#39;raw_data&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">corr_mat</span> <span class="o">=</span> <span class="n">corr_mat</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Raw data present! Compute correlation matrix using get_corr_mat().&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="DataStats.get_prec_mat"><a class="viewcode-back" href="../datastats.html#datastats.DataStats.get_prec_mat">[docs]</a>    <span class="k">def</span> <span class="nf">get_prec_mat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_set_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get precision matrix for a desired conditioning set.</span>
+<span class="sd">        </span>
+<span class="sd">        The precision matrix is an intermediate variable for calculating partial correlation.</span>
+<span class="sd">        </span>
+<span class="sd">        :param var_set_key: set of conditioning variables</span>
+<span class="sd">        :return: precision matrix for conditioning variables specified in var_set_key</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># initialize dictionary of precision matrices</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s">&#39;prec_mat&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prec_mat</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="c"># if the relevant precision matrix is not in the dictionary, calculate it</span>
+        <span class="k">if</span> <span class="n">var_set_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prec_mat</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">corr_mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_corr_mat</span><span class="p">()</span>
+            <span class="n">var_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">var_set_key</span><span class="p">)</span>
+            <span class="n">var_corr</span> <span class="o">=</span> <span class="n">corr_mat</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">var_list</span><span class="p">,</span><span class="n">var_list</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prec_mat</span><span class="p">[</span><span class="n">var_set_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">var_corr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prec_mat</span><span class="p">[</span><span class="n">var_set_key</span><span class="p">]</span>
+       </div>
+<div class="viewcode-block" id="DataStats.get_part_corr"><a class="viewcode-back" href="../datastats.html#datastats.DataStats.get_part_corr">[docs]</a>    <span class="k">def</span> <span class="nf">get_part_corr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pair</span><span class="p">,</span> <span class="n">cond_set</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get partial correlation and corresponding Fisher&#39;s z for a pair of variables, conditioned on a set of other variables.</span>
+<span class="sd">        </span>
+<span class="sd">        :param pair: variables to correlate</span>
+<span class="sd">        :param cond_set: conditioning variables</span>
+<span class="sd">        :return: part_corr = partial correlation, fisher_z = Fisher&#39;s z statistic</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># load the relevant precision matrix</span>
+        <span class="n">var_set</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span><span class="o">+</span><span class="nb">list</span><span class="p">(</span><span class="n">cond_set</span><span class="p">)</span>
+        <span class="n">var_set_keys</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">var_set</span><span class="p">))</span>
+        <span class="n">prec_mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prec_mat</span><span class="p">(</span><span class="n">var_set_keys</span><span class="p">)</span>
+
+        <span class="c"># compute partial correlation</span>
+        <span class="n">var_range</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">var_set_keys</span><span class="p">))</span>
+        <span class="n">xi</span> <span class="o">=</span> <span class="p">[</span><span class="n">ind</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">var_range</span> <span class="k">if</span> <span class="n">var_set_keys</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">==</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">yi</span> <span class="o">=</span> <span class="p">[</span><span class="n">ind</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">var_range</span> <span class="k">if</span> <span class="n">var_set_keys</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">==</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">part_corr</span> <span class="o">=</span> <span class="o">-</span><span class="n">prec_mat</span><span class="p">[</span><span class="n">xi</span><span class="p">,</span><span class="n">yi</span><span class="p">]</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">prec_mat</span><span class="p">[</span><span class="n">xi</span><span class="p">,</span><span class="n">xi</span><span class="p">]</span><span class="o">*</span><span class="n">prec_mat</span><span class="p">[</span><span class="n">yi</span><span class="p">,</span><span class="n">yi</span><span class="p">])</span>
+
+        <span class="c"># compute Fisher z statistic for comparison to standard normal distribution</span>
+        <span class="n">nsamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nsamp</span><span class="p">()</span>
+        <span class="n">ncond</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cond_set</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s">&#39;ignore&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">part_corr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_PREC</span><span class="p">:</span>
+                <span class="n">part_corr</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_PREC</span>
+            <span class="n">fisher_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">nsamp</span><span class="o">-</span><span class="n">ncond</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">arctanh</span><span class="p">(</span><span class="n">part_corr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">part_corr</span><span class="p">,</span><span class="n">fisher_z</span>    
+</div>
+<div class="viewcode-block" id="DataStats.get_nsamp"><a class="viewcode-back" href="../datastats.html#datastats.DataStats.get_nsamp">[docs]</a>    <span class="k">def</span> <span class="nf">get_nsamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the number of samples for computation of Fisher&#39;s z.</span>
+<span class="sd">        </span>
+<span class="sd">        The number of samples is computed from the sample data, if available.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: number of samples</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s">&#39;raw_data&#39;</span><span class="p">):</span>
+            <span class="n">nsamp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_data</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s">&#39;nsamp&#39;</span><span class="p">):</span>
+            <span class="n">nsamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsamp</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Number of samples is unknown and cannot be computed from data.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">nsamp</span>
+    </div>
+<div class="viewcode-block" id="DataStats.set_nsamp"><a class="viewcode-back" href="../datastats.html#datastats.DataStats.set_nsamp">[docs]</a>    <span class="k">def</span> <span class="nf">set_nsamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nsamp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the number of samples.</span>
+<span class="sd">        </span>
+<span class="sd">        Use only in the absence of actual sample data.</span>
+<span class="sd">        </span>
+<span class="sd">        :param nsamp: number of samples</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="s">&#39;raw_data&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nsamp</span> <span class="o">=</span> <span class="n">nsamp</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Raw data present! Compute number of samples using get_nsamp().&#39;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pycause 0.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Dave Kielpinski.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

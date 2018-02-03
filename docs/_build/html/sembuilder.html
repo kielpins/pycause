@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>sembuilder module &mdash; pycause 0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pycause 0.0 documentation" href="index.html" />
+    <link rel="next" title="septests module" href="septests.html" />
+    <link rel="prev" title="pymc_plot_graph module" href="pymc_plot_graph.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="septests.html" title="septests module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pymc_plot_graph.html" title="pymc_plot_graph module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pycause 0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-sembuilder">
+<span id="sembuilder-module"></span><h1>sembuilder module<a class="headerlink" href="#module-sembuilder" title="Permalink to this headline">¶</a></h1>
+<p>Generate structural equation model for a graph.</p>
+<dl class="function">
+<dt id="sembuilder.do_trial">
+<tt class="descclassname">sembuilder.</tt><tt class="descname">do_trial</tt><big>(</big><em>node_order</em>, <em>parents</em>, <em>fun_list</em><big>)</big><a class="reference internal" href="_modules/sembuilder.html#do_trial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sembuilder.do_trial" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sembuilder.make_fun_list">
+<tt class="descclassname">sembuilder.</tt><tt class="descname">make_fun_list</tt><big>(</big><em>parents</em>, <em>beta_range</em>, <em>stdev</em><big>)</big><a class="reference internal" href="_modules/sembuilder.html#make_fun_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sembuilder.make_fun_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sembuilder.make_lgfun">
+<tt class="descclassname">sembuilder.</tt><tt class="descname">make_lgfun</tt><big>(</big><em>betas</em>, <em>stdev</em><big>)</big><a class="reference internal" href="_modules/sembuilder.html#make_lgfun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sembuilder.make_lgfun" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sembuilder.parse">
+<tt class="descclassname">sembuilder.</tt><tt class="descname">parse</tt><big>(</big><em>graph</em><big>)</big><a class="reference internal" href="_modules/sembuilder.html#parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sembuilder.parse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sembuilder.sim_graph">
+<tt class="descclassname">sembuilder.</tt><tt class="descname">sim_graph</tt><big>(</big><em>graph</em>, <em>beta_range</em>, <em>stdev</em>, <em>fname</em>, <em>nsamp=1000</em><big>)</big><a class="reference internal" href="_modules/sembuilder.html#sim_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sembuilder.sim_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sembuilder.test_do_trial">
+<tt class="descclassname">sembuilder.</tt><tt class="descname">test_do_trial</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/sembuilder.html#test_do_trial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sembuilder.test_do_trial" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sembuilder.test_make_fun_list">
+<tt class="descclassname">sembuilder.</tt><tt class="descname">test_make_fun_list</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/sembuilder.html#test_make_fun_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sembuilder.test_make_fun_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sembuilder.test_parse">
+<tt class="descclassname">sembuilder.</tt><tt class="descname">test_parse</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/sembuilder.html#test_parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sembuilder.test_parse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="sembuilder.test_sim_graph">
+<tt class="descclassname">sembuilder.</tt><tt class="descname">test_sim_graph</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/sembuilder.html#test_sim_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sembuilder.test_sim_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pymc_plot_graph.html"
+                        title="previous chapter">pymc_plot_graph module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="septests.html"
+                        title="next chapter">septests module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/sembuilder.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="septests.html" title="septests module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pymc_plot_graph.html" title="pymc_plot_graph module"
+             >previous</a> |</li>
+        <li><a href="index.html">pycause 0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Dave Kielpinski.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

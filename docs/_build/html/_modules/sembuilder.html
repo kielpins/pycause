@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>sembuilder &mdash; pycause 0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="pycause 0.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pycause 0.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for sembuilder</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Generate structural equation model for a graph.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="kn">as</span> <span class="nn">nx</span>
+
+<div class="viewcode-block" id="make_lgfun"><a class="viewcode-back" href="../sembuilder.html#sembuilder.make_lgfun">[docs]</a><span class="k">def</span> <span class="nf">make_lgfun</span><span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">stdev</span><span class="p">):</span>
+    <span class="n">stdev</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1e-9</span><span class="p">,</span><span class="n">stdev</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">lgfun</span><span class="p">(</span><span class="nb">vars</span><span class="p">):</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">betas</span><span class="p">)):</span>
+            <span class="n">retval</span> <span class="o">+=</span> <span class="n">betas</span><span class="p">[</span><span class="nb">iter</span><span class="p">]</span><span class="o">*</span><span class="nb">vars</span><span class="p">[</span><span class="nb">iter</span><span class="p">]</span>
+        <span class="n">retval</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">stdev</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">retval</span>
+    <span class="k">return</span> <span class="n">lgfun</span>
+</div>
+<div class="viewcode-block" id="test_parse"><a class="viewcode-back" href="../sembuilder.html#sembuilder.test_parse">[docs]</a><span class="k">def</span> <span class="nf">test_parse</span><span class="p">():</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">)])</span>
+    <span class="n">node_order</span><span class="p">,</span><span class="n">parents</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">node_order</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">parents</span> <span class="o">==</span> <span class="p">{</span><span class="mi">0</span><span class="p">:[],</span><span class="mi">1</span><span class="p">:[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span><span class="mi">2</span><span class="p">:[</span><span class="mi">0</span><span class="p">],</span><span class="mi">3</span><span class="p">:[],</span><span class="mi">4</span><span class="p">:[</span><span class="mi">1</span><span class="p">]}</span>
+</div>
+<div class="viewcode-block" id="parse"><a class="viewcode-back" href="../sembuilder.html#sembuilder.parse">[docs]</a><span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+    <span class="n">node_order</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">parents</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="nb">iter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="nb">set</span><span class="p">(</span><span class="n">node_order</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">set</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span> <span class="ow">and</span> <span class="nb">iter</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+        <span class="n">next_tier</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span> <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_order</span> <span class="ow">and</span> 
+                    <span class="nb">set</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">predecessors</span><span class="p">(</span><span class="n">node</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="nb">set</span><span class="p">(</span><span class="n">node_order</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">next_tier</span><span class="p">:</span>
+            <span class="n">parents</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">predecessors</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+        <span class="n">node_order</span> <span class="o">+=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">next_tier</span><span class="p">)</span>
+        <span class="nb">iter</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">node_order</span><span class="p">,</span><span class="n">parents</span>
+        </div>
+<div class="viewcode-block" id="test_make_fun_list"><a class="viewcode-back" href="../sembuilder.html#sembuilder.test_make_fun_list">[docs]</a><span class="k">def</span> <span class="nf">test_make_fun_list</span><span class="p">():</span>
+    <span class="n">parents</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:[],</span><span class="mi">1</span><span class="p">:[</span><span class="mi">0</span><span class="p">]}</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">stdev</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">beta_range</span> <span class="o">=</span> <span class="p">(</span><span class="n">beta</span><span class="p">,</span><span class="n">beta</span><span class="p">)</span>
+    <span class="n">fun_list</span> <span class="o">=</span> <span class="n">make_fun_list</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span><span class="n">beta_range</span><span class="p">,</span><span class="n">stdev</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">fun_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]([])</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">fun_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]([</span><span class="n">a</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+    </div>
+<div class="viewcode-block" id="make_fun_list"><a class="viewcode-back" href="../sembuilder.html#sembuilder.make_fun_list">[docs]</a><span class="k">def</span> <span class="nf">make_fun_list</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span><span class="n">beta_range</span><span class="p">,</span><span class="n">stdev</span><span class="p">):</span>
+    <span class="n">fun_list</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">parents</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">npar</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">parents</span><span class="p">[</span><span class="n">node</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">npar</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sigma</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sigma</span> <span class="o">=</span> <span class="n">stdev</span>
+        <span class="n">betas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">*</span><span class="n">beta_range</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="n">npar</span><span class="p">)</span>
+        <span class="n">fun_list</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_lgfun</span><span class="p">(</span><span class="n">betas</span><span class="p">,</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fun_list</span>
+</div>
+<div class="viewcode-block" id="test_do_trial"><a class="viewcode-back" href="../sembuilder.html#sembuilder.test_do_trial">[docs]</a><span class="k">def</span> <span class="nf">test_do_trial</span><span class="p">():</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">)])</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">node_order</span><span class="p">,</span><span class="n">parents</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="n">fun_list</span> <span class="o">=</span> <span class="n">make_fun_list</span><span class="p">(</span><span class="n">parents</span><span class="p">,(</span><span class="n">beta</span><span class="p">,</span><span class="n">beta</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">do_trial</span><span class="p">(</span><span class="n">node_order</span><span class="p">,</span><span class="n">parents</span><span class="p">,</span><span class="n">fun_list</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">beta</span><span class="o">*</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">beta</span><span class="o">*</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">+</span><span class="n">vals</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span><span class="n">beta</span><span class="o">*</span><span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)])</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">node_order</span><span class="p">,</span><span class="n">parents</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="n">fun_list</span> <span class="o">=</span> <span class="n">make_fun_list</span><span class="p">(</span><span class="n">parents</span><span class="p">,(</span><span class="n">beta</span><span class="p">,</span><span class="n">beta</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">do_trial</span><span class="p">(</span><span class="n">node_order</span><span class="p">,</span><span class="n">parents</span><span class="p">,</span><span class="n">fun_list</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span><span class="n">beta</span><span class="o">*</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="n">vals</span><span class="p">[</span><span class="mi">3</span><span class="p">]))</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="n">beta</span><span class="o">*</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">vals</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+</div>
+<div class="viewcode-block" id="do_trial"><a class="viewcode-back" href="../sembuilder.html#sembuilder.do_trial">[docs]</a><span class="k">def</span> <span class="nf">do_trial</span><span class="p">(</span><span class="n">node_order</span><span class="p">,</span><span class="n">parents</span><span class="p">,</span><span class="n">fun_list</span><span class="p">):</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_order</span><span class="p">)</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+    <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">node_order</span><span class="p">[</span><span class="nb">iter</span><span class="p">]</span>
+        <span class="n">arglist</span> <span class="o">=</span> <span class="p">[</span><span class="n">vals</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">[</span><span class="n">node</span><span class="p">]]</span>
+        <span class="n">vals</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">fun_list</span><span class="p">[</span><span class="n">node</span><span class="p">](</span><span class="n">arglist</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vals</span>
+</div>
+<div class="viewcode-block" id="sim_graph"><a class="viewcode-back" href="../sembuilder.html#sembuilder.sim_graph">[docs]</a><span class="k">def</span> <span class="nf">sim_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span><span class="n">beta_range</span><span class="p">,</span><span class="n">stdev</span><span class="p">,</span><span class="n">fname</span><span class="p">,</span><span class="n">nsamp</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="n">node_order</span><span class="p">,</span><span class="n">parents</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="n">fun_list</span> <span class="o">=</span> <span class="n">make_fun_list</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span><span class="n">beta_range</span><span class="p">,</span><span class="n">stdev</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nsamp</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">)])</span>
+    <span class="k">for</span> <span class="nb">iter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nsamp</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">[</span><span class="nb">iter</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">do_trial</span><span class="p">(</span><span class="n">node_order</span><span class="p">,</span><span class="n">parents</span><span class="p">,</span><span class="n">fun_list</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span><span class="n">data</span><span class="p">,</span><span class="n">fmt</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%.4f</span><span class="s">&#39;</span><span class="p">,</span><span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span>
+    </div>
+<div class="viewcode-block" id="test_sim_graph"><a class="viewcode-back" href="../sembuilder.html#sembuilder.test_sim_graph">[docs]</a><span class="k">def</span> <span class="nf">test_sim_graph</span><span class="p">():</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">)])</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">sim_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,(</span><span class="n">beta</span><span class="p">,</span><span class="n">beta</span><span class="p">),</span><span class="mi">10</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span><span class="mi">2</span><span class="p">],</span><span class="n">beta</span><span class="o">*</span><span class="n">data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span><span class="n">beta</span><span class="o">*</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">data</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="n">data</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span><span class="mi">4</span><span class="p">],</span><span class="n">beta</span><span class="o">*</span><span class="n">data</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    
+    
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pycause 0.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Dave Kielpinski.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pcalg module &mdash; pycause 0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pycause 0.0 documentation" href="index.html" />
+    <link rel="next" title="pymc_plot_graph module" href="pymc_plot_graph.html" />
+    <link rel="prev" title="loaddata module" href="loaddata.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pymc_plot_graph.html" title="pymc_plot_graph module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="loaddata.html" title="loaddata module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pycause 0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-pcalg">
+<span id="pcalg-module"></span><h1>pcalg module<a class="headerlink" href="#module-pcalg" title="Permalink to this headline">¶</a></h1>
+<p>Implementation of the PC algorithm.
+[1] Spirtes, Glymour, and Scheines, Causation, Prediction, and Search, 2nd ed.
+[2] Kalisch &amp; Buhlmann, J Machine Learning Res 8, 613 (2007)</p>
+<dl class="function">
+<dt id="pcalg.can_orient">
+<tt class="descclassname">pcalg.</tt><tt class="descname">can_orient</tt><big>(</big><em>G</em>, <em>edge</em><big>)</big><a class="reference internal" href="_modules/pcalg.html#can_orient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcalg.can_orient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test whether edge should be oriented under PC algorithm rules for non-collider edges.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>G</strong> &#8211; partially oriented graph</li>
+<li><strong>edge</strong> &#8211; edge of G under test</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if edge should be oriented, False otherwise</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pcalg.orient_colliders">
+<tt class="descclassname">pcalg.</tt><tt class="descname">orient_colliders</tt><big>(</big><em>skel</em>, <em>sep_set</em><big>)</big><a class="reference internal" href="_modules/pcalg.html#orient_colliders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcalg.orient_colliders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Identify and orient colliders in skeleton.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>skel</strong> &#8211; skeleton graph calculated by get_skel</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">partially oriented graph as determined by colliders</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pcalg.orient_edges">
+<tt class="descclassname">pcalg.</tt><tt class="descname">orient_edges</tt><big>(</big><em>G</em><big>)</big><a class="reference internal" href="_modules/pcalg.html#orient_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcalg.orient_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Orient remaining edges after colliders have been oriented.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>G</strong> &#8211; partially oriented graph (colliders oriented)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">maximally oriented DAG</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pcalg.pc">
+<tt class="descclassname">pcalg.</tt><tt class="descname">pc</tt><big>(</big><em>statdat</em>, <em>sig</em>, <em>verbose=True</em><big>)</big><a class="reference internal" href="_modules/pcalg.html#pc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pcalg.pc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run PC algorithm on statistical data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>statdat</strong> &#8211; DataStats object containing input data</li>
+<li><strong>sig</strong> &#8211; confidence interval for conditional independence test, expressed in units of standard deviation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">G: causal DAG
+sep_set: d-separation dict, key = separated node pairs, value = d-separating set</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="loaddata.html"
+                        title="previous chapter">loaddata module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pymc_plot_graph.html"
+                        title="next chapter">pymc_plot_graph module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pcalg.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pymc_plot_graph.html" title="pymc_plot_graph module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="loaddata.html" title="loaddata module"
+             >previous</a> |</li>
+        <li><a href="index.html">pycause 0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Dave Kielpinski.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

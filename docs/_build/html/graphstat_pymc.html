@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>graphstat_pymc module &mdash; pycause 0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pycause 0.0 documentation" href="index.html" />
+    <link rel="next" title="loaddata module" href="loaddata.html" />
+    <link rel="prev" title="graphstat module" href="graphstat.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="loaddata.html" title="loaddata module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="graphstat.html" title="graphstat module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pycause 0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-graphstat_pymc">
+<span id="graphstat-pymc-module"></span><h1>graphstat_pymc module<a class="headerlink" href="#module-graphstat_pymc" title="Permalink to this headline">¶</a></h1>
+<p>Generates statistical data from graphical model using pymc implementation of Markov chain Monte Carlo.</p>
+<dl class="function">
+<dt id="graphstat_pymc.get_lg_funs">
+<tt class="descclassname">graphstat_pymc.</tt><tt class="descname">get_lg_funs</tt><big>(</big><em>graph</em>, <em>funs</em>, <em>beta_range</em>, <em>stdev</em><big>)</big><a class="reference internal" href="_modules/graphstat_pymc.html#get_lg_funs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#graphstat_pymc.get_lg_funs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates PyMC variables for all children of the variables specified in &#8216;funs&#8217;, using linear Gaussian structural
+equation model. Adds new variables to the &#8216;funs&#8217; dictionary.</p>
+<p>Called while traversing directed acyclic graph for model-building.
+Uses structural equation model to generate data:</p>
+<blockquote>
+<div>child = beta1 * parent1 + beta2 * parent2 + ... + noise
+beta1, beta2, ... follow a uniform distribution over beta_range = (lower,upper)</div></blockquote>
+<p>graph = networkx.DiGraph object specifying causal dependences
+funs = dict of PyMC variables already created. keys: node names, values: PyMC variables
+beta = linear coefficient in all structural equations
+stdev = standard deviation of exogenous noise added to each child variable</p>
+<p>Returns funs = dict of all extant PyMC variables, including children of variables in funs. keys: node names,
+values: PyMC variables</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="graphstat_pymc.lingauss">
+<tt class="descclassname">graphstat_pymc.</tt><tt class="descname">lingauss</tt><big>(</big><em>graph_in</em>, <em>beta_range</em>, <em>stdev</em>, <em>fname</em>, <em>nsamp=1000</em><big>)</big><a class="reference internal" href="_modules/graphstat_pymc.html#lingauss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#graphstat_pymc.lingauss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates linear Gaussian statistical data from directed acyclic graph.</p>
+<dl class="docutils">
+<dt>Uses structural equation model to generate data:</dt>
+<dd>child = beta1*parent1 + beta2*parent2 + ... + noise
+beta1,beta2,... follow a uniform distribution over beta_range = (lower,upper)
+noise is normally distributed with mean = 0 and standard deviation = stdev</dd>
+</dl>
+<p>Saves data sampled from model in .txt format.</p>
+<p>graph_in = networkx DiGraph object specifying causal dependences
+beta_range = (lower,upper) bounds for linear coefficient in structural equations
+stdev = standard deviation of exogenous noise added to each child variable
+fname = filename for .txt save
+nsamp = number of data samples</p>
+<p>Returns mc = PyMC.MCMC object with nsamp samples.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="graphstat.html"
+                        title="previous chapter">graphstat module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="loaddata.html"
+                        title="next chapter">loaddata module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/graphstat_pymc.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="loaddata.html" title="loaddata module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="graphstat.html" title="graphstat module"
+             >previous</a> |</li>
+        <li><a href="index.html">pycause 0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Dave Kielpinski.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

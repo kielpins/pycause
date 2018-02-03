@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>skeleton &mdash; pycause 0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="pycause 0.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pycause 0.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for skeleton</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Operations on graph skeleton</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">combinations</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="kn">as</span> <span class="nn">nx</span>
+
+<div class="viewcode-block" id="init_skel"><a class="viewcode-back" href="../skeleton.html#skeleton.init_skel">[docs]</a><span class="k">def</span> <span class="nf">init_skel</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Initializes graph from node list in preparation for skeleton retrieval.</span>
+<span class="sd">    </span>
+<span class="sd">    :param nodes: list of node names</span>
+<span class="sd">    :return: G = networkx.Graph object with &#39;dep_stat&#39; attribute for each edge, used to hold statistical dependence</span>
+<span class="sd">    test statistic.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">complete_graph</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span>
+    <span class="c"># each edge carries information on statistical dependence</span>
+    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+        <span class="n">G</span><span class="p">[</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="s">&#39;dep_stat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">return</span> <span class="n">G</span>
+</div>
+<div class="viewcode-block" id="get_skel"><a class="viewcode-back" href="../skeleton.html#skeleton.get_skel">[docs]</a><span class="k">def</span> <span class="nf">get_skel</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">get_poss_sep</span><span class="p">,</span> <span class="n">statdat</span><span class="p">,</span> <span class="n">sig</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Removes edges between conditionally independent nodes of completely connected graph.</span>
+<span class="sd">    </span>
+<span class="sd">    :param G: networkx.Graph object, normally completely connected</span>
+<span class="sd">    :param get_poss_sep: function to retrieve possible conditioning sets. Depends on algorithm.</span>
+<span class="sd">    :param statdat: datastats.DataStats object containing statistical data for independence tests</span>
+<span class="sd">    :param sig: level of significance for independence tests, expressed in # standard deviations</span>
+<span class="sd">    :return: G = original &#39;G&#39; with conditionally independent edges removed. Note: not a copy of G, but the original!</span>
+<span class="sd">             sepset = dictionary of d-separation sets. key: d-separated node pair, value: d-separating set for key.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">card</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">card_max</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>
+    <span class="n">num_edges</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span>
+    <span class="n">sepset</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">poss_seps</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+        <span class="n">poss_seps</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_poss_sep</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">edge</span><span class="p">)</span>
+    <span class="c"># loop over cardinality of trial sepsets</span>
+    <span class="k">while</span> <span class="n">card</span><span class="o">&lt;</span><span class="n">card_max</span><span class="p">:</span>   
+        <span class="n">nedge</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">tested_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="c"># loop over edges</span>
+        <span class="k">while</span> <span class="n">nedge</span><span class="o">&lt;</span><span class="n">num_edges</span><span class="p">:</span>  
+            <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span><span class="o">&lt;=</span><span class="nb">set</span><span class="p">(</span><span class="n">tested_edges</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span> <span class="k">if</span> <span class="n">edge</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tested_edges</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c"># test all trial sepsets of cardinality card</span>
+            <span class="n">G</span><span class="p">,</span><span class="n">edge_sepset</span> <span class="o">=</span> <span class="n">find_edge_sep</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">statdat</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">poss_seps</span><span class="p">[</span><span class="n">edge</span><span class="p">],</span> <span class="n">card</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">edge_sepset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">G</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="o">*</span><span class="n">edge</span><span class="p">)</span>
+                <span class="n">sepset</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_sepset</span>
+            <span class="n">tested_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+            <span class="n">nedge</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">card</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="nb">max</span><span class="p">([</span><span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">G</span><span class="p">])</span><span class="o">&lt;=</span><span class="n">card</span><span class="p">:</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">G</span><span class="p">,</span><span class="n">sepset</span>
+
+</div>
+<div class="viewcode-block" id="find_edge_sep"><a class="viewcode-back" href="../skeleton.html#skeleton.find_edge_sep">[docs]</a><span class="k">def</span> <span class="nf">find_edge_sep</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">statdat</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">poss_seps</span><span class="p">,</span> <span class="n">card</span><span class="p">,</span> <span class="n">sig</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Looks for d-separation of a node pair by all conditioning sets of a given cardinality.</span>
+<span class="sd">    </span>
+<span class="sd">    :param G: networkx.Graph object</span>
+<span class="sd">    :param statdat: datastats.DataStats object containing statistical data for independence tests</span>
+<span class="sd">    :param edge: candidate node pair (x,y)</span>
+<span class="sd">    :param poss_seps: set of all candidate nodes for inclusion in conditioning set</span>
+<span class="sd">    :param card: cardinality of conditioning set</span>
+<span class="sd">    :param sig: level of significance for independence tests, expressed in # standard deviations</span>
+<span class="sd">    :return: G = original &#39;G&#39; with statistical dependence information (dep_stat,stat_test) added to edge</span>
+<span class="sd">                dep_stat = conditional dependence statistic (e.g., partial correlation)</span>
+<span class="sd">                stat_test = test statistic for dep_stat (e.g., Fisher&#39;s Z)</span>
+<span class="sd">             cond = conditioning set that successfully d-separates &#39;edge&#39;, = None if no such set exists</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">get_cond_dep</span> <span class="o">=</span> <span class="n">statdat</span><span class="o">.</span><span class="n">get_part_corr</span> 
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">edge</span>
+    <span class="k">for</span> <span class="n">poss</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">(</span><span class="n">poss_seps</span><span class="p">,</span> <span class="n">card</span><span class="p">):</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">poss</span><span class="p">)</span>
+        <span class="n">cond_key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">cond</span><span class="p">))</span>
+        <span class="c"># get conditional dependence statistic</span>
+        <span class="k">if</span> <span class="n">cond_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">][</span><span class="s">&#39;dep_stat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">dep_stat</span><span class="p">,</span><span class="n">stat_test</span> <span class="o">=</span> <span class="n">get_cond_dep</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">cond</span><span class="p">)</span>
+            <span class="c"># push information onto graph edge</span>
+            <span class="n">G</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">][</span><span class="s">&#39;dep_stat&#39;</span><span class="p">][</span><span class="n">cond_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dep_stat</span><span class="p">,</span> <span class="n">stat_test</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dep_stat</span><span class="p">,</span> <span class="n">stat_test</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">][</span><span class="s">&#39;dep_stat&#39;</span><span class="p">][</span><span class="n">cond_key</span><span class="p">]</span>
+        <span class="c"># if separating set is found, quit looking</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">stat_test</span><span class="p">)</span><span class="o">&lt;</span><span class="n">sig</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">G</span><span class="p">,</span> <span class="n">cond</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c"># no sets of cardinality &#39;card&#39; separate the edge under test</span>
+        <span class="k">return</span> <span class="n">G</span><span class="p">,</span> <span class="bp">None</span>
+
+</div>
+<div class="viewcode-block" id="find_test_edge"><a class="viewcode-back" href="../skeleton.html#skeleton.find_test_edge">[docs]</a><span class="k">def</span> <span class="nf">find_test_edge</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">tested_edges</span><span class="p">,</span> <span class="n">card</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find new eligible edge for test of d-separation with respect to conditioning sets of a given cardinality.</span>
+<span class="sd">    </span>
+<span class="sd">    :param G: networkx.Graph object</span>
+<span class="sd">    :param tested_edges: list of edges already tested at this cardinality</span>
+<span class="sd">    :param card: cardinality under test</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">untested</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span> <span class="k">if</span> <span class="n">edge</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tested_edges</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">untested</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">&gt;=</span> <span class="n">card</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">edge</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c"># no eligible edges found</span>
+        <span class="k">return</span> <span class="bp">None</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">pycause 0.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Dave Kielpinski.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

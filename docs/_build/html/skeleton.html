@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>skeleton module &mdash; pycause 0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pycause 0.0 documentation" href="index.html" />
+    <link rel="next" title="test package" href="test.html" />
+    <link rel="prev" title="septests module" href="septests.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="test.html" title="test package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="septests.html" title="septests module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pycause 0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-skeleton">
+<span id="skeleton-module"></span><h1>skeleton module<a class="headerlink" href="#module-skeleton" title="Permalink to this headline">¶</a></h1>
+<p>Operations on graph skeleton</p>
+<dl class="function">
+<dt id="skeleton.find_edge_sep">
+<tt class="descclassname">skeleton.</tt><tt class="descname">find_edge_sep</tt><big>(</big><em>G</em>, <em>statdat</em>, <em>edge</em>, <em>poss_seps</em>, <em>card</em>, <em>sig</em><big>)</big><a class="reference internal" href="_modules/skeleton.html#find_edge_sep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skeleton.find_edge_sep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Looks for d-separation of a node pair by all conditioning sets of a given cardinality.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>G</strong> &#8211; networkx.Graph object</li>
+<li><strong>statdat</strong> &#8211; datastats.DataStats object containing statistical data for independence tests</li>
+<li><strong>edge</strong> &#8211; candidate node pair (x,y)</li>
+<li><strong>poss_seps</strong> &#8211; set of all candidate nodes for inclusion in conditioning set</li>
+<li><strong>card</strong> &#8211; cardinality of conditioning set</li>
+<li><strong>sig</strong> &#8211; level of significance for independence tests, expressed in # standard deviations</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><dl class="docutils">
+<dt>G = original &#8216;G&#8217; with statistical dependence information (dep_stat,stat_test) added to edge</dt>
+<dd><p class="first last">dep_stat = conditional dependence statistic (e.g., partial correlation)
+stat_test = test statistic for dep_stat (e.g., Fisher&#8217;s Z)</p>
+</dd>
+</dl>
+<p>cond = conditioning set that successfully d-separates &#8216;edge&#8217;, = None if no such set exists</p>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="skeleton.find_test_edge">
+<tt class="descclassname">skeleton.</tt><tt class="descname">find_test_edge</tt><big>(</big><em>G</em>, <em>tested_edges</em>, <em>card</em><big>)</big><a class="reference internal" href="_modules/skeleton.html#find_test_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skeleton.find_test_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find new eligible edge for test of d-separation with respect to conditioning sets of a given cardinality.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>G</strong> &#8211; networkx.Graph object</li>
+<li><strong>tested_edges</strong> &#8211; list of edges already tested at this cardinality</li>
+<li><strong>card</strong> &#8211; cardinality under test</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="skeleton.get_skel">
+<tt class="descclassname">skeleton.</tt><tt class="descname">get_skel</tt><big>(</big><em>G</em>, <em>get_poss_sep</em>, <em>statdat</em>, <em>sig</em><big>)</big><a class="reference internal" href="_modules/skeleton.html#get_skel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skeleton.get_skel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes edges between conditionally independent nodes of completely connected graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>G</strong> &#8211; networkx.Graph object, normally completely connected</li>
+<li><strong>get_poss_sep</strong> &#8211; function to retrieve possible conditioning sets. Depends on algorithm.</li>
+<li><strong>statdat</strong> &#8211; datastats.DataStats object containing statistical data for independence tests</li>
+<li><strong>sig</strong> &#8211; level of significance for independence tests, expressed in # standard deviations</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">G = original &#8216;G&#8217; with conditionally independent edges removed. Note: not a copy of G, but the original!
+sepset = dictionary of d-separation sets. key: d-separated node pair, value: d-separating set for key.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="skeleton.init_skel">
+<tt class="descclassname">skeleton.</tt><tt class="descname">init_skel</tt><big>(</big><em>nodes</em><big>)</big><a class="reference internal" href="_modules/skeleton.html#init_skel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skeleton.init_skel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes graph from node list in preparation for skeleton retrieval.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodes</strong> &#8211; list of node names</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">G = networkx.Graph object with &#8216;dep_stat&#8217; attribute for each edge, used to hold statistical dependence</td>
+</tr>
+</tbody>
+</table>
+<p>test statistic.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="septests.html"
+                        title="previous chapter">septests module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="test.html"
+                        title="next chapter">test package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/skeleton.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="test.html" title="test package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="septests.html" title="septests module"
+             >previous</a> |</li>
+        <li><a href="index.html">pycause 0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Dave Kielpinski.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

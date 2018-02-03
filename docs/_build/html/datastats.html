@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>datastats module &mdash; pycause 0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pycause 0.0 documentation" href="index.html" />
+    <link rel="next" title="dirgraph module" href="dirgraph.html" />
+    <link rel="prev" title="Welcome to pycause’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dirgraph.html" title="dirgraph module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to pycause’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pycause 0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-datastats">
+<span id="datastats-module"></span><h1>datastats module<a class="headerlink" href="#module-datastats" title="Permalink to this headline">¶</a></h1>
+<p>Define DataStats class for managing statistical data.</p>
+<dl class="class">
+<dt id="datastats.CachedAttribute">
+<em class="property">class </em><tt class="descclassname">datastats.</tt><tt class="descname">CachedAttribute</tt><big>(</big><em>method</em>, <em>name=None</em><big>)</big><a class="reference internal" href="_modules/datastats.html#CachedAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datastats.CachedAttribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Computes attribute value and caches it in instance.
+Not actually used in code at present, but could be useful for later refactoring.
+Author: Denis Otkidach</p>
+<dl class="docutils">
+<dt>Example of use:</dt>
+<dd><dl class="first last docutils">
+<dt>class MyClass(object):</dt>
+<dd><dl class="first docutils">
+<dt>def myMethod(self):</dt>
+<dd># ...</dd>
+</dl>
+<p class="last">myMethod = CachedAttribute(myMethod)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Use &#8220;del inst.myMethod&#8221; to clear cache.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="datastats.DataStats">
+<em class="property">class </em><tt class="descclassname">datastats.</tt><tt class="descname">DataStats</tt><big>(</big><em>var_names=None</em>, <em>raw_data=None</em><big>)</big><a class="reference internal" href="_modules/datastats.html#DataStats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datastats.DataStats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Manages statistical information on causal model.</p>
+<p>Allows for specification of statistics &#8220;by hand&#8221; when sample data is not available.</p>
+<dl class="method">
+<dt id="datastats.DataStats.get_corr_mat">
+<tt class="descname">get_corr_mat</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/datastats.html#DataStats.get_corr_mat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datastats.DataStats.get_corr_mat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get correlation matrix, either by returning cached value or calculating from raw data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">correlation matrix</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="datastats.DataStats.get_nsamp">
+<tt class="descname">get_nsamp</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/datastats.html#DataStats.get_nsamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datastats.DataStats.get_nsamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of samples for computation of Fisher&#8217;s z.</p>
+<p>The number of samples is computed from the sample data, if available.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">number of samples</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="datastats.DataStats.get_part_corr">
+<tt class="descname">get_part_corr</tt><big>(</big><em>pair</em>, <em>cond_set</em><big>)</big><a class="reference internal" href="_modules/datastats.html#DataStats.get_part_corr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datastats.DataStats.get_part_corr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get partial correlation and corresponding Fisher&#8217;s z for a pair of variables, conditioned on a set of other variables.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pair</strong> &#8211; variables to correlate</li>
+<li><strong>cond_set</strong> &#8211; conditioning variables</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">part_corr = partial correlation, fisher_z = Fisher&#8217;s z statistic</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="datastats.DataStats.get_prec_mat">
+<tt class="descname">get_prec_mat</tt><big>(</big><em>var_set_key</em><big>)</big><a class="reference internal" href="_modules/datastats.html#DataStats.get_prec_mat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datastats.DataStats.get_prec_mat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get precision matrix for a desired conditioning set.</p>
+<p>The precision matrix is an intermediate variable for calculating partial correlation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>var_set_key</strong> &#8211; set of conditioning variables</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">precision matrix for conditioning variables specified in var_set_key</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="datastats.DataStats.set_corr_mat">
+<tt class="descname">set_corr_mat</tt><big>(</big><em>corr_mat</em><big>)</big><a class="reference internal" href="_modules/datastats.html#DataStats.set_corr_mat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datastats.DataStats.set_corr_mat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set correlation matrix by hand. Use when raw data is not present.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>corr_mat</strong> &#8211; correlation matrix</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="datastats.DataStats.set_nsamp">
+<tt class="descname">set_nsamp</tt><big>(</big><em>nsamp</em><big>)</big><a class="reference internal" href="_modules/datastats.html#DataStats.set_nsamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#datastats.DataStats.set_nsamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the number of samples.</p>
+<p>Use only in the absence of actual sample data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nsamp</strong> &#8211; number of samples</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to pycause&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dirgraph.html"
+                        title="next chapter">dirgraph module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/datastats.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dirgraph.html" title="dirgraph module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to pycause’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">pycause 0.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2016, Dave Kielpinski.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
